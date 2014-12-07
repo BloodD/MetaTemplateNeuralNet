@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Convolutionalneuralnetwork : An API for a convolutional neural network implemented in C++">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Convolutionalneuralnetwork</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/OutlawLemur/ConvolutionalNeuralNetwork">View on GitHub</a>
+
+          <h1 id="project_title">Convolutionalneuralnetwork</h1>
+          <h2 id="project_tagline">An API for a convolutional neural network implemented in C++</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/OutlawLemur/ConvolutionalNeuralNetwork/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/OutlawLemur/ConvolutionalNeuralNetwork/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a id="convolutionalneuralnetwork" class="anchor" href="#convolutionalneuralnetwork" aria-hidden="true"><span class="octicon octicon-link"></span></a>ConvolutionalNeuralNetwork</h1>
+
+<h1></h1>
+
+<p>An API for a convolutional neural network implemented in C++ with the intent to increase and assist research on architectures of neural nets.</p>
+
+<h2>
+<a id="static-library" class="anchor" href="#static-library" aria-hidden="true"><span class="octicon octicon-link"></span></a>Static Library</h2>
+
+<h1></h1>
+
+<p>The build and .h files for referencing as an external static library can be found in the Release folder.</p>
+
+<h2>
+<a id="what-a-convolutional-neural-network-is" class="anchor" href="#what-a-convolutional-neural-network-is" aria-hidden="true"><span class="octicon octicon-link"></span></a>What a Convolutional Neural Network is</h2>
+
+<h1></h1>
+
+<p>A convolutional neural network is made up of many layers of neurons, or nodes, that hold a value. 
+There are also many synapses connecting each neuron, like a link between the nodes. This model is based
+off of how our brains work. In a neural network, a synapse is fired and then determines the value of the 
+neuron it is connected to. Each synapse also has a weight and a bias that go into calculating the value of
+the next neuron. This is similar to how our brains' synapses grow stronger with use, which is how we remember
+events or information. </p>
+
+<p>Each layer in a convolutional neural network is made up of feature maps, or many neurons that share similar synapses. 
+In these feature maps, the output for each neuron is dependent on the neurons in the previous layer, and their weights.
+This helps segment the data into so called feature points. Many feature maps make up a layer, which all make up networks.</p>
+
+<p>When the network learns, or adjusts the weights based off of labeled data, it uses a process of both discriminating and generating data.
+In each layer, the network first discriminates, then generates, then discriminates again, forming what is known as a Markov Chain. Then, alternating 
+Gibbs sampling is used to then find the difference between the first discriminated layer and the layer that was discriminated after "reconstruction." 
+These values are then multiplied by a small value, or the learning rate of the network. This is done for each layer going up through the network, creating
+a recursion learning based off of the adjusted weights in the previous layer. This entire process is often called "pretraining" as it is less accurate than
+traditional methods (such as backpropagation) but helps learn the correct neighborhood to then fine-tune the network in.</p>
+
+<p>The next process in learning, backpropagation, is found using the error of the entire network. The derivative of this function is found with respect to the 
+weights, so that each weight can find the role it had in the error of the network. These derivatives are then used to find the minimum of the error function. 
+An issue with this algorithm is that the network can become stuck in a local minimum instead of finding the global minimum of the network.</p>
+
+<h2>
+<a id="how-this-api-is-implemented" class="anchor" href="#how-this-api-is-implemented" aria-hidden="true"><span class="octicon octicon-link"></span></a>How this API is implemented</h2>
+
+<h1></h1>
+
+<p>This API has a neural network premade, with code to discriminate, generate, and teach. Note that a new input must be set for each iteration of
+discriminating, generating, or teaching. There is also a custom file format created especially for CNNs, consisting only of the data for each layer's 
+weights.</p>
+
+<h1>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Usage</h1>
+
+<h1></h1>
+
+<p>Below is an example of a basic network that would learn the relationship <code>y=3x</code></p>
+
+<div class="highlight highlight-c++"><pre>NeuralNet net = NeuralNet();
+net.add_layer(<span class="pl-k">new</span> MaxpoolLayer&lt;<span class="pl-c1">1</span>, <span class="pl-c1">1</span>, <span class="pl-c1">1</span>, <span class="pl-c1">1</span>, <span class="pl-c1">1</span>&gt;());
+net.add_layer(<span class="pl-k">new</span> FeedForwardLayer&lt;<span class="pl-c1">1</span>, <span class="pl-c1">1</span>, <span class="pl-c1">1</span>&gt;())
+net.add_layer(<span class="pl-k">new</span> OutputLayer&lt;<span class="pl-c1">1</span>, <span class="pl-c1">1</span>, <span class="pl-c1">1</span>&gt;());
+
+net.learning_rate = <span class="pl-c1">0</span>.<span class="pl-c1">05f</span>;
+net.use_dropout = <span class="pl-c1">false</span>;
+net.binary_net = <span class="pl-c1">false</span>;
+
+net.load_data(<span class="pl-s1"><span class="pl-pds">"</span>C://example.cnn<span class="pl-pds">"</span></span>);
+
+std::vector&lt;Matrix&lt;<span class="pl-st">float</span>&gt;*&gt; input = { <span class="pl-k">new</span> Matrix2D&lt;<span class="pl-st">float</span>, <span class="pl-c1">1</span>, <span class="pl-c1">1</span>&gt;({ <span class="pl-c1">1</span> }) };
+std::vector&lt;Matrix&lt;<span class="pl-st">float</span>&gt;*&gt; labels = { <span class="pl-k">new</span> Matrix2D&lt;<span class="pl-st">float</span>, <span class="pl-c1">1</span>, <span class="pl-c1">1</span>&gt;({ <span class="pl-c1">3</span> }) };
+
+net.set_input(input);
+net.set_labels(labels);
+
+<span class="pl-k">for</span> (<span class="pl-st">int</span> i = <span class="pl-c1">0</span>; i &lt; <span class="pl-c1">100</span>; ++i)
+    net.train(<span class="pl-c1">3</span>);
+
+net.save_data(<span class="pl-s1"><span class="pl-pds">"</span>C://example.cnn<span class="pl-pds">"</span></span>);</pre></div>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Convolutionalneuralnetwork maintained by <a href="https://github.com/OutlawLemur">OutlawLemur</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
